@@ -12,6 +12,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Colors} from "react-native/Libraries/NewAppScreen";
 // @ts-ignore
 import Ripple from "react-native-material-ripple";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({navigation}: any) => {
 
@@ -24,25 +25,40 @@ const HomeScreen = ({navigation}: any) => {
     const [listData, setListData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [url, setUrl] = useState("");
 
     useEffect(() => {
         setLoading(true);
-        fetch(app.apiUrl, {
-            method: "GET",
-            headers: {
-                "Content-type": "application/json;charset=UTF-8",
-                "Mobile-Auth-User": app.apiClient,
-                "Mobile-Auth-Pw": app.apiSecret
-            }
-        })
-            .then((res) => res.json())
-            .then(({data}) => {
-                setListData(data);
+        setInterval(() => {
+            fetch(app.apiUrl, {
+                method: "GET",
+                headers: {
+                    "Content-type": "application/json;charset=UTF-8",
+                    "Mobile-Auth-User": app.apiClient,
+                    "Mobile-Auth-Pw": app.apiSecret
+                }
             })
-            .finally(() => {
-                setLoading(false);
-            });
+                .then((res) => res.json())
+                .then(({data}) => {
+                    setListData(data);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }, 1000);
     }, []);
+
+    useEffect(() => {
+        if (url) {
+            navigation.navigate("WebScreen", {
+                url: url,
+            });
+        }
+    }, [url]);
+
+    AsyncStorage.getItem('sms_url').then((value => {
+        if (value) setUrl(value);
+    }));
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -79,9 +95,15 @@ const HomeScreen = ({navigation}: any) => {
                                 <Ripple
                                     style={style.ripple}
                                     onPress={() => {
-                                        navigation.navigate("WebScreen", {
-                                            url: item.sms_url,
-                                        });
+                                        AsyncStorage.setItem('sms_url', item.sms_url)
+                                            .then(() => {
+                                                console.log("sms_url saved")
+                                            })
+                                            .finally(() => {
+                                                navigation.navigate("WebScreen", {
+                                                    url: item.sms_url,
+                                                });
+                                            });
                                     }}
                                 >
                                     <View style={[style.cardBody]}>
@@ -144,13 +166,14 @@ const style = StyleSheet.create({
         fontSize: 18,
         fontWeight: "600",
         textTransform: "capitalize",
+        color: '#000000'
     },
     description: {
         fontSize: 18,
         fontWeight: "400",
         textTransform: "lowercase",
-        color: Colors.grey,
         marginTop: 2,
+        color: '#444444'
     }
 });
 
