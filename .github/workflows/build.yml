@@ -12,8 +12,8 @@ jobs:
    - name: Set up ruby env
      uses: ruby/setup-ruby@v1
      with:
-       ruby-version: '3.0'
-       bundler-cache: true
+        bundler: "Gemfile.lock"
+        bundler-cache: true
  
    - name: Define version code with offset
      env:
