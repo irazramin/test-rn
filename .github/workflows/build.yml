@@ -9,13 +9,6 @@ jobs:
    steps:
    - uses: actions/checkout@v2
  
-   - name: Set up ruby env
-     uses: ruby/setup-ruby@v1
-     with:
-        bundler-cache: true
-        ruby-version: "2.7.6"  
-        run: bundle install && bundle update --ruby
- 
    - name: Define version code with offset
      env:
          RUN_NUMBER: ${{ github.run_number }}
@@ -29,9 +22,13 @@ jobs:
      with:
        gradlePath: android/app/build.gradle
        versionCode: ${{ env.version_code }}
- 
+       
    - name: Build & deploy Android release
-     run: bundle exec fastlane android
+     uses: ruby/setup-ruby@v1
+     with:
+        bundler-cache: true
+        ruby-version: "2.7.6"  
+        run: bundle install && bundle update --ruby && bundle exec fastlane android
  
    - name: Upload build artifacts
      uses: actions/upload-artifact@v2
