@@ -14,6 +14,7 @@ jobs:
      with:
         bundler: "Gemfile.lock"
         bundler-cache: true
+        ruby-version: "2.7.6"
  
    - name: Define version code with offset
      env:
