@@ -13,7 +13,8 @@ jobs:
      uses: ruby/setup-ruby@v1
      with:
         bundler-cache: true
-        ruby-version: "2.7.6"
+        ruby-version: "2.7.6"  
+        run: bundle install && bundle update --ruby
  
    - name: Define version code with offset
      env:
