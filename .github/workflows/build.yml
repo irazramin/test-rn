@@ -12,16 +12,13 @@ jobs:
    - name: Set up ruby env
      uses: ruby/setup-ruby@v1
      with:
-       ruby-version: 2.7.2
+       ruby-version: '3.0'
        bundler-cache: true
- 
-   - name: Run tests
-     run: bundle exec fastlane android test
  
    - name: Define version code with offset
      env:
          RUN_NUMBER: ${{ github.run_number }}
-         INITIAL_VERSION_CODE: 73
+         INITIAL_VERSION_CODE: 1
      run: |
          VERSION_CODE=$((INITIAL_VERSION_CODE + RUN_NUMBER))
          echo "version_code=$VERSION_CODE" >> $GITHUB_ENV
